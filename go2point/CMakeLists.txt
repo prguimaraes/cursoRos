@@ -191,3 +191,6 @@ include_directories(
 
 add_executable(quat2yaw src/quat2yaw.cpp)
 target_link_libraries(quat2yaw ${catkin_LIBRARIES})
+
+add_executable(go2point src/go2point.cpp)
+target_link_libraries(go2point ${catkin_LIBRARIES})
