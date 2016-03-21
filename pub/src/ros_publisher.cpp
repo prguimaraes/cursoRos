@@ -6,7 +6,7 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "ros_pub");
     ros::NodeHandle node;
     ros::Publisher pub = node.advertise<std_msgs::String>("ros_world",1);
-    ros::Rate loopRate(10);
+    ros::Rate loopRate(60);
     
     std_msgs::String msg;
     

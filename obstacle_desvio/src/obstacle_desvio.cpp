@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
     ros::NodeHandle node;
     ros::Subscriber sub = node.subscribe("vrep/vehicle/frontSonar",1,callback);
     
-    pub = node.advertise<geometry_msgs::Twist>("robotSpeeds",1);
+    pub = node.advertise<geometry_msgs::Twist>("cmd_vel",1);
     
     ros::spin();    
 }

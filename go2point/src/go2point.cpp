@@ -5,7 +5,10 @@
 #include <tf/tf.h>
 #include <math.h>
 
-#define K 1
+#define K1 2
+#define K2 3
+
+
 
 ros::Publisher pub;
 geometry_msgs::Twist robot_speeds;
@@ -25,9 +28,15 @@ void callback(const nav_msgs::OdometryConstPtr &msg){
     double yaw = tf::getYaw(msg->pose.pose.orientation);
     double theta = atan2(yf - y,xf - x);
     double d = sqrt(pow(xf-x,2) + pow(yf-y,2));
-    if(d > 0.1){
-        robot_speeds.linear.x = 1;
-        robot_speeds.angular.z = K*(theta - yaw);
+    
+    if(d > 0.1 && d <= 0.5){
+        robot_speeds.linear.x = K2*d;
+        robot_speeds.angular.z = K1*(theta - yaw);
+    }
+    if(d > 0.5){
+        robot_speeds.linear.x = 1.5;
+        robot_speeds.angular.z = K1*(theta - yaw);
+
     }
     else{
         robot_speeds.linear.x = 0;
@@ -41,6 +50,7 @@ int main(int argc, char *argv[]){
     ros::init(argc, argv, "go2point");
     ros::NodeHandle node;
     ros::Subscriber sub = node.subscribe("vrep/vehicle/odometry",1,callback);
+
     
     pub = node.advertise<geometry_msgs::Twist>("cmd_vel",1);
     
