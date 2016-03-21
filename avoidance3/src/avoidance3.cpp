@@ -50,27 +50,6 @@ int main(int argc, char *argv[]){
     pub = node.advertise<geometry_msgs::Twist>("cmd_vel",1);
     
     while(ros::ok){
-        
-        if(sonarData[FRONT] != 0 || sonarData[RIGHT] != 0 || sonarData[LEFT] != 0){
-            int aux = biggest(sonarData);
-            if(aux == RIGHT){
-                robot_speeds.linear.x = 0;
-                robot_speeds.angular.z = 1;
-            }
-            if(aux == LEFT){
-                robot_speeds.linear.x = 0;
-                robot_speeds.angular.z = -1;
-            }
-            if(aux == FRONT){
-
-            }
-        }
-        else{
-            robot_speeds.linear.x = 1;
-            robot_speeds.angular.z = 0;
-        }
-        ROS_INFO("Publishing... ");
-        pub.publish(robot_speeds);
         ros::spinOnce(); 
         loopRate.sleep();
     }
