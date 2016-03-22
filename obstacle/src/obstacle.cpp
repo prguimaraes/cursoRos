@@ -23,7 +23,7 @@ ros::Publisher pub;
 geometry_msgs::Twist robot_speeds;
 
 
-
+int crashflag = 0;
 float sensorData[2][3];
 
 
@@ -40,7 +40,7 @@ int biggest(float *v){
 }
 
 void avoid(){
-    if(robot_speeds.linear.x <= CRASHING_SPEED && (sensorData[0][FRONT] == 0 || sensorData[0][FRONT] >= CRASHING_DISTANCE) ){
+    if((robot_speeds.linear.x <= CRASHING_SPEED && (sensorData[0][FRONT] == 0 || sensorData[0][FRONT] >= CRASHING_DISTANCE)) || crashflag == 1){
         if(sensorData[0][FRONT] >= sensorData[0][LEFT]){
             robot_speeds.angular.z = 8;
             robot_speeds.linear.x = -0.5;
@@ -49,6 +49,11 @@ void avoid(){
             robot_speeds.angular.z = -8;
             robot_speeds.linear.x = -0.5;
         }
+        if(sensorData[0][FRONT] < (1- CRASHING_DISTANCE)){
+            crashflag = 0;
+            return;
+        }
+        crashflag = 1;
         return;
     }
     if (sensorData[0][FRONT] >= SENSING_DISTANCE || sensorData[0][RIGHT] >= SENSING_DISTANCE || sensorData[0][LEFT] >= SENSING_DISTANCE ){
