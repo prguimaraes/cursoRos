@@ -7,15 +7,24 @@
 #define RIGHT 1
 #define LEFT 2
 
-#define SENSING_DISTANCE 0
+#define Kp 0.5
+#define Kd 100
+#define T 1/180
+
+#define Kp_x 10
+#define Kd_x 100
+
+#define SENSING_DISTANCE 0.25
 #define AVOID_ANGULAR_K 10
+#define CRASHING_DISTANCE 0.9
+#define CRASHING_SPEED 0.2
 
 ros::Publisher pub;
 geometry_msgs::Twist robot_speeds;
 
 
 
-float sensorData[3];
+float sensorData[2][3];
 
 
 int biggest(float *v){
@@ -31,23 +40,36 @@ int biggest(float *v){
 }
 
 void avoid(){
-    if (sensorData[FRONT] != SENSING_DISTANCE || sensorData[RIGHT] != SENSING_DISTANCE || sensorData[LEFT] != SENSING_DISTANCE ){
-        if(sensorData[FRONT] != 0){
-            robot_speeds.linear.x = 0;
-            if(sensorData[LEFT] > sensorData[RIGHT]){
-                robot_speeds.angular.z = -2;
+    if(robot_speeds.linear.x <= CRASHING_SPEED && (sensorData[0][FRONT] == 0 || sensorData[0][FRONT] >= CRASHING_DISTANCE) ){
+        if(sensorData[0][FRONT] >= sensorData[0][LEFT]){
+            robot_speeds.angular.z = 8;
+            robot_speeds.linear.x = -0.5;
+        }
+        else{
+            robot_speeds.angular.z = -8;
+            robot_speeds.linear.x = -0.5;
+        }
+        return;
+    }
+    if (sensorData[0][FRONT] >= SENSING_DISTANCE || sensorData[0][RIGHT] >= SENSING_DISTANCE || sensorData[0][LEFT] >= SENSING_DISTANCE ){
+        if(sensorData[0][FRONT] != 0){
+            robot_speeds.linear.x = 1.5;
+            if(sensorData[0][LEFT] > sensorData[0][RIGHT]){
+                //robot_speeds.angular.z = -(Kp*sensorData[0][LEFT] + Kd*(sensorData[0][LEFT] - sensorData[1][LEFT])/T);
+                robot_speeds.angular.z = -0.5;
             }
             else{
-                robot_speeds.angular.z = 2;
+               // robot_speeds.angular.z = Kp*sensorData[0][RIGHT] + Kd*(sensorData[0][RIGHT] - sensorData[1][RIGHT])/T;
+                robot_speeds.angular.z = 0.5;
             }
         }
         else{
-            int aux = biggest(sensorData);
+            int aux = biggest(sensorData[0]);
             if(aux == RIGHT){
-                robot_speeds.angular.z = AVOID_ANGULAR_K*sensorData[RIGHT] +3;
+               robot_speeds.angular.z = Kp*sensorData[0][RIGHT] + Kd*(sensorData[0][RIGHT] - sensorData[0][RIGHT])/T;
             }
             if(aux == LEFT){
-                robot_speeds.angular.z = -AVOID_ANGULAR_K*sensorData[LEFT] - 3;
+                robot_speeds.angular.z = -(Kp*sensorData[0][LEFT] + Kd*(sensorData[0][LEFT] - sensorData[1][LEFT])/T);
             }
         }
     }
@@ -56,15 +78,18 @@ void avoid(){
 }
 
 void frontCallback(const std_msgs::Float32Ptr &msg){
-    sensorData[FRONT] = msg->data;
+    sensorData[1][FRONT] = sensorData[0][FRONT];
+    sensorData[0][FRONT] = msg->data;
 }
 
 void rightCallback(const std_msgs::Float32Ptr &msg){
-    sensorData[RIGHT] = msg->data;
+    sensorData[1][RIGHT] = sensorData[0][RIGHT];
+    sensorData[0][RIGHT] = msg->data;
 }
 
 void leftCallback(const std_msgs::Float32Ptr &msg){
-    sensorData[LEFT] = msg->data;
+    sensorData[1][LEFT] = sensorData[0][LEFT];
+    sensorData[0][LEFT] = msg->data;
 }
 
 void speedCallback(const geometry_msgs::TwistPtr &msg){
@@ -81,6 +106,11 @@ int main(int argc, char *argv[]){
     ros::Subscriber speedSub = node.subscribe("fantasmao/desSpeed",1,speedCallback);
     
     pub = node.advertise<geometry_msgs::Twist>("cmd_vel",1);
+    
+    sensorData[0][FRONT] = 0;
+    sensorData[0][RIGHT] = 0;
+    sensorData[0][LEFT] = 0;
+    
     
     ros::Rate loopRate(180);
     

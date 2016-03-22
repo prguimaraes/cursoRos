@@ -23,7 +23,7 @@ double d_theta[2];
 double d_theta_i;
 double psi;
 
-double delta = 0.5;
+double delta = 0.4;
 
 double normalizeAngles(double angle){
     if(angle > M_PI){

@@ -2,7 +2,7 @@
 #include<nav_msgs/Odometry.h>
 #include<geometry_msgs/Point.h>
 
-#define CHANGEPATH_DISTANCE 1
+#define CHANGEPATH_DISTANCE 0.7
 
 //publisher and subscriber
 ros::Publisher w1_pub;
@@ -11,8 +11,8 @@ ros::Subscriber car_position_sub;
 
 geometry_msgs::Point w1, w2;
 
-float px[12] = {10.700,10.700,15.250,8.550,-5.925,-14.375,-13.300,-2.25,-0.875,-13.025,-12.825,-10.275};
-float py[12] ={0.150,-8.275,-15.250,-19.875,-19.950,-14.075,-12.675,-12.625,-10.875,-10.275,-2.100,-0.75};
+float px[12] = {10.700,10.775,15.350,8.550,-5.925,-14.375,-13.300,-1.125,-1.375,-13.025,-13.1,-10.275};
+float py[12] ={0.150,-9.225,-15.075,-19.875,-19.950,-14.075,-12.675,-12.45,-11.05,-10.275,-1.975,-0.075};
 
 int i;
 
