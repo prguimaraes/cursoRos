@@ -32,15 +32,23 @@ int biggest(float *v){
 
 void avoid(){
     if (sensorData[FRONT] != SENSING_DISTANCE || sensorData[RIGHT] != SENSING_DISTANCE || sensorData[LEFT] != SENSING_DISTANCE ){
-        int aux = biggest(sensorData);
-        if(aux == FRONT){
-            
+        if(sensorData[FRONT] != 0){
+            robot_speeds.linear.x = 0;
+            if(sensorData[LEFT] > sensorData[RIGHT]){
+                robot_speeds.angular.z = -2;
+            }
+            else{
+                robot_speeds.angular.z = 2;
+            }
         }
-        if(aux == RIGHT){
-//            robot_speeds.angular.z = AVOID_ANGULAR_K*sensorData[RIGHT] +3;
-        }
-        if(aux == LEFT){
-//            robot_speeds.angular.z = -AVOID_ANGULAR_K*sensorData[LEFT] - 3;
+        else{
+            int aux = biggest(sensorData);
+            if(aux == RIGHT){
+                robot_speeds.angular.z = AVOID_ANGULAR_K*sensorData[RIGHT] +3;
+            }
+            if(aux == LEFT){
+                robot_speeds.angular.z = -AVOID_ANGULAR_K*sensorData[LEFT] - 3;
+            }
         }
     }
     ROS_INFO("Setting robot speeds x = %f, theta = %f",robot_speeds.linear.x,robot_speeds.angular.z);
