@@ -64,7 +64,7 @@ void callback(const nav_msgs::OdometryConstPtr &msg){
     d_theta[0] = normalizeAngles(psi_d - psi);
     d_theta_i = d_theta_i + d_theta[0];
     
-    robot_speeds.linear.x = 1;
+    robot_speeds.linear.x = 1.5;
     robot_speeds.angular.z = Kp*d_theta[0] + Kd*(d_theta[0] - d_theta[1])/T + Ki*d_theta_i;
     
 //    if(dist > 0.1 && dist <= 0.5){
@@ -85,11 +85,11 @@ void callback(const nav_msgs::OdometryConstPtr &msg){
 }
 
 int main(int argc, char *argv[]){
-    ros::init(argc, argv, "carrot_chasing");
+    ros::init(argc, argv, "fantasmao_carrot");
     ros::NodeHandle node;
     ros::Subscriber sub = node.subscribe("vrep/vehicle/odometry",1,callback);
     d_theta_i = 0;
-    pub = node.advertise<geometry_msgs::Twist>("cmd_vel",1);
+    pub = node.advertise<geometry_msgs::Twist>("fantasmao/desSpeed",1);
     
     ros::spin();    
 }
