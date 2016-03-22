@@ -14,16 +14,15 @@
 #define Kp_x 10
 #define Kd_x 100
 
-#define SENSING_DISTANCE 0.25
+#define SENSING_DISTANCE 0.75
 #define AVOID_ANGULAR_K 10
-#define CRASHING_DISTANCE 0.9
-#define CRASHING_SPEED 0.2
+#define CRASHING_DISTANCE 0.3
 
 ros::Publisher pub;
 geometry_msgs::Twist robot_speeds;
 
 
-int crashflag = 0;
+int crashflag;
 float sensorData[2][3];
 
 
@@ -40,19 +39,23 @@ int biggest(float *v){
 }
 
 void avoid(){
-    if((robot_speeds.linear.x <= CRASHING_SPEED && (sensorData[0][FRONT] == 0 || sensorData[0][FRONT] >= CRASHING_DISTANCE)) || crashflag == 1){
+    if(((sensorData[0][FRONT] <= CRASHING_DISTANCE) && sensorData[0][FRONT] != 0) || crashflag == 1){
         if(sensorData[0][FRONT] >= sensorData[0][LEFT]){
-            robot_speeds.angular.z = 8;
-            robot_speeds.linear.x = -0.5;
+            robot_speeds.angular.z = 0.7;
+            robot_speeds.linear.x = -1;
         }
         else{
-            robot_speeds.angular.z = -8;
-            robot_speeds.linear.x = -0.5;
+            robot_speeds.angular.z = -0.7;
+            robot_speeds.linear.x = -1;
         }
-        if(sensorData[0][FRONT] < (1- CRASHING_DISTANCE)){
+        if((sensorData[0][FRONT] >= (1- CRASHING_DISTANCE)) || sensorData[0][FRONT] == 0 ){
             crashflag = 0;
+            pub.publish(robot_speeds);
             return;
         }
+        ROS_INFO("ANDANDO DE RÉ");
+        ROS_INFO("%f %f",robot_speeds.angular.z,robot_speeds.linear.x);
+        pub.publish(robot_speeds);
         crashflag = 1;
         return;
     }
@@ -78,7 +81,7 @@ void avoid(){
             }
         }
     }
-    ROS_INFO("Setting robot speeds x = %f, theta = %f",robot_speeds.linear.x,robot_speeds.angular.z);
+    //ROS_INFO("Setting robot speeds x = %f, theta = %f",robot_speeds.linear.x,robot_speeds.angular.z);
     pub.publish(robot_speeds);
 }
 
@@ -115,7 +118,7 @@ int main(int argc, char *argv[]){
     sensorData[0][FRONT] = 0;
     sensorData[0][RIGHT] = 0;
     sensorData[0][LEFT] = 0;
-    
+    crashflag = 0;
     
     ros::Rate loopRate(180);
     
