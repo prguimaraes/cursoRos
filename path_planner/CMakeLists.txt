@@ -186,3 +186,5 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+add_executable(planner src/path_planner.cpp)
+target_link(planner ${catkin_LIBRARIES})
