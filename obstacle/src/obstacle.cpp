@@ -8,7 +8,7 @@
 #define LEFT 2
 
 #define SENSING_DISTANCE 0
-#define AVOID_ANGULAR_SPEED 3
+#define AVOID_ANGULAR_K 10
 
 ros::Publisher pub;
 geometry_msgs::Twist robot_speeds;
@@ -37,10 +37,10 @@ void avoid(){
             
         }
         if(aux == RIGHT){
-            robot_speeds.angular.z = AVOID_ANGULAR_SPEED;
+//            robot_speeds.angular.z = AVOID_ANGULAR_K*sensorData[RIGHT] +3;
         }
         if(aux == LEFT){
-            robot_speeds.angular.z = -AVOID_ANGULAR_SPEED;
+//            robot_speeds.angular.z = -AVOID_ANGULAR_K*sensorData[LEFT] - 3;
         }
     }
     ROS_INFO("Setting robot speeds x = %f, theta = %f",robot_speeds.linear.x,robot_speeds.angular.z);
@@ -66,9 +66,9 @@ void speedCallback(const geometry_msgs::TwistPtr &msg){
 int main(int argc, char *argv[]){
     ros::init(argc, argv, "obstacle");
     ros::NodeHandle node;
-    ros::Subscriber frontSub = node.subscribe("vrep/vehicle/frontSonar",1,frontCallback);
-    ros::Subscriber rightSub = node.subscribe("vrep/vehicle/rightSonar",1,rightCallback);
-    ros::Subscriber leftSub = node.subscribe("vrep/vehicle/leftSonar",1,leftCallback);
+    ros::Subscriber frontSub = node.subscribe("vrep/fantasmao/frontSonar",1,frontCallback);
+    ros::Subscriber rightSub = node.subscribe("vrep/fantasmao/rightSonar",1,rightCallback);
+    ros::Subscriber leftSub = node.subscribe("vrep/fantasmao/leftSonar",1,leftCallback);
 
     ros::Subscriber speedSub = node.subscribe("fantasmao/desSpeed",1,speedCallback);
     
@@ -81,4 +81,5 @@ int main(int argc, char *argv[]){
         avoid();
         loopRate.sleep();
     } 
+    return 0;
 }

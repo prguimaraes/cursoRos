@@ -53,8 +53,8 @@ void callback(const geometry_msgs::TwistPtr &msg){
 int main(int argc, char *argv[]){
     ros::init(argc, argv, "kine_controller");
     ros::NodeHandle node;
-    leftSpeed = node.advertise<std_msgs::Float32>("vrep/vehicle/motorLeftSpeed",1);//("vrep/fantasmao/motorLeftSpeed",1);
-    rightSpeed = node.advertise<std_msgs::Float32>("vrep/vehicle/motorRightSpeed",1);
+    leftSpeed = node.advertise<std_msgs::Float32>("vrep/fantasmao/motorLeftSpeed",1);//("vrep/fantasmao/motorLeftSpeed",1);
+    rightSpeed = node.advertise<std_msgs::Float32>("vrep/fantasmao/motorRightSpeed",1);
     
     ros::Subscriber robotSpeeds = node.subscribe("cmd_vel",1,callback);
 
